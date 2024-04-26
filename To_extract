@@ -1,0 +1,12 @@
+def extract():
+    try:
+        tbl_name = "DimProduct"
+        # Execute the SQL query using the engine
+        result = engine.execute(f'SELECT * FROM {tbl_name}')
+        # Fetch the result into a DataFrame
+        df = pd.DataFrame(result.fetchall(), columns=result.keys())
+        return df, tbl_name
+    except Exception as e:
+        print("Data extract error:", str(e))
+# Define the table name
+tbl = 'DimProduct'
