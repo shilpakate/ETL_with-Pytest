@@ -1,0 +1,39 @@
+# create data pipeline to load and extract data from SQL
+#import needed libraries
+from sqlalchemy import create_engine
+import pandas as pd
+import os
+from sqlalchemy import create_engine
+
+# Replace these values with your actual SQL Server connection details
+server_name = 'LAPTOP-8B4KETL7'
+database_name = 'AdventureWorksDW2019'
+
+conn_str = f'DRIVER=ODBC Driver 17 for SQL Server;' \
+           f'SERVER={server_name};' \
+           f'DATABASE={database_name};' \
+           f'Trusted_Connection=yes;'
+engine = create_engine(f'mssql+pyodbc:///?odbc_connect={conn_str}')
+
+file_path = 'D:\\data\\Product.xlsx'  # Replace with the path to your file
+df = pd.read_excel(file_path)  # Use read_excel() if your file is in Excel format
+print(df.shape)
+#create function to load data into MS-SQL
+def load(df, tbl):
+    try:
+        # Use the 'tbl' parameter as the table name
+        df.to_sql(tbl, engine, index=False, if_exists='replace', schema='dbo')
+        # Add elapsed time to final print out
+        print("Data imported successfully")
+    except Exception as e:
+        print("Data load error: " + str(e))
+
+#extract data from sql server
+def extract():
+    try:
+        tbl_name = "DimProduct"
+        #query and load save data to dataframe
+        df = pd.read_sql_query(f'select * FROM {tbl_name}', engine)
+        return df, tbl_name
+    except Exception as e:
+        print("Data extract error: " + str(e))
